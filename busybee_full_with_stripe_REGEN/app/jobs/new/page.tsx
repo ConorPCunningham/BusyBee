@@ -1,0 +1,1 @@
+import JobCreateForm from '@/components/JobCreateForm.withAvailability'; export const metadata={title:'Post a job • BusyBee'}; export default function NewJobPage(){ return (<div className='max-w-2xl mx-auto p-6 space-y-4'><h1 className='text-2xl font-semibold'>Post a job</h1><JobCreateForm/></div>); }

@@ -1,0 +1,72 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  name         String?
+  role         Role    @default(REQUESTER)
+
+  // NOK (simplified)
+  nextOfKinEmail         String?
+  nextOfKinPhone         String?
+  nextOfKinEmailVerified Boolean @default(false)
+  nextOfKinPhoneVerified Boolean @default(false)
+
+  // Stripe
+  stripeCustomerId String?
+  stripeAccountId  String?   // helpers
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Role { REQUESTER HELPER ADMIN }
+
+model HelperPresence {
+  helperId   String  @id
+  lat        Float?
+  lng        Float?
+  geoHash6   String?
+  status     PresenceStatus @default(OFFLINE)
+  capacity   Int     @default(1)
+  updatedAt  DateTime @updatedAt
+}
+
+enum PresenceStatus { OFFLINE ONLINE BUSY }
+
+model Job {
+  id          String  @id @default(cuid())
+  title       String
+  description String
+  requesterId String
+  helperId    String?
+  status      JobStatus @default(OPEN)
+
+  priceCents Int?
+  currency   String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum JobStatus { OPEN CONFIRMED IN_PROGRESS DONE DISPUTED CANCELLED }
+
+model Escrow {
+  id          String  @id @default(cuid())
+  jobId       String  @unique
+  amountCents Int
+  currency    String
+  status      EscrowStatus @default(HELD)
+
+  // Stripe refs
+  stripeCheckoutSessionId String?
+  stripePaymentIntentId   String?
+  stripeTransferId        String?
+  applicationFeeCents     Int?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum EscrowStatus { HELD RELEASED REFUNDED DISPUTED }

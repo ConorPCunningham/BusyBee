@@ -1,0 +1,1 @@
+export default function JobFormNokHint(){ return (<div className="text-xs text-gray-500">Optional: add a next-of-kin contact in Settings to receive confirmations and reminders.</div>); }
